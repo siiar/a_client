@@ -1,0 +1,14 @@
+query GetCountry($name: String!) {
+  country(name: $name) {
+    name
+    topLevelDomain
+    region
+    population
+    currencies {
+      name
+      symbol
+    }
+    capital
+    flag
+  }
+}

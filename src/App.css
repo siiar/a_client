@@ -1,0 +1,49 @@
+html,
+body,
+#root {
+    font-size: 16px;
+    height: 100%;
+}
+
+.page {
+    display: flex;
+    height: 100%;
+}
+.button {
+    border: 0;
+    border-radius: 5px;
+}
+.button.large {
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+}
+.button.success {
+    background-color: green;
+}
+.button.success:hover {
+    
+}
+.button.info {
+    color: #fff;
+    background-color: #227093;
+}
+.button.info:hover {
+
+}
+
+.button
+
+.bg-primary {
+
+}
+input {
+    font-size: 1rem;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    padding: 0.8rem;
+    box-shadow: 0;
+}
+input:focus {
+    border: 1px solid #000;
+    outline: none;
+}

@@ -1,0 +1,7 @@
+.page {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #0cbaba;
+    background-image: linear-gradient(315deg, #0cbaba 0%, #380036 74%);
+}

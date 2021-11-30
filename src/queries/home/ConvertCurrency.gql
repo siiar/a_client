@@ -1,0 +1,12 @@
+query ConvertCurrency($base: String!, $amount: Float!, $symbols: [String!]!) {
+  exchange(base: $base, amount: $amount, symbols: $symbols) {
+    base {
+      symbol
+      value
+    }
+    currencies {
+      symbol
+      value
+    }
+  }
+}

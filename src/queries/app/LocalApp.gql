@@ -1,0 +1,7 @@
+query LocalApp {
+  user {
+    id @client
+    name @client
+  }
+  token @client
+}

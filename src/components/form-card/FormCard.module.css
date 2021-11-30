@@ -1,0 +1,60 @@
+
+.container {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 1rem 0 #ccc;
+}
+.container > .header,
+.container > .content,
+.container > .footer {
+    padding: 1rem;
+}
+.container > .header {
+    font-weight: bold;
+}
+.container > .content {
+    padding-top: 0;
+}
+.container > .content input {
+    width: 100%;
+    box-sizing: border-box;
+}
+.container > .content .input-wrapper {
+    margin-bottom: 1rem;
+}
+.container > .content .input-wrapper:last-child {
+    margin-bottom: 0;
+}
+.container > .footer {
+    background-color: #eee;
+}
+/**
+ * Glow Theme
+ */
+
+.glow-theme.container {
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: 0 0 1rem 0 #0cbaba;
+}
+.glow-theme.container > .header {
+    border-bottom: 1px solid #0cbaba;
+    color: #0cbaba;
+}
+.glow-theme.container > .content {
+    padding: 1rem;
+}
+.glow-theme.container > .footer {
+    border-top: 1px solid #0cbaba;
+    background-color: transparent;
+}
+.glow-theme input {
+    background-color: transparent;
+    border-color: #0cbaba !important;
+    color: #0cbaba !important;
+    transition: 0.2s all;
+}
+
+.glow-theme input:focus {
+    box-shadow: 0 0 0.5rem 0 #0cbaba;
+}
