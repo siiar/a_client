@@ -68,7 +68,8 @@ export default AuthorizedPage(function() {
   ] = useState({})
   // Currency Exchang Map Effect Observer
   useEffect(() => {
-    setCountries(countries.map(country => 
+    setCountries(countries => 
+      countries.map(country => 
       ({
         ...country, 
         currencies: country.currencies.map(
@@ -83,11 +84,8 @@ export default AuthorizedPage(function() {
   // Get User Info
   const {
     data: {
-      user : {name},
-      token
-    } = {},
-    loading,
-    error
+      user : {name}
+    } = {}
   } = useQuery(LOCAL_APP.QUERY)
   /**
    * Quereis
@@ -97,20 +95,23 @@ export default AuthorizedPage(function() {
     getCountry,
     {
       data: dataGetCountry,
-      loading: loadingGetCountry
+      loading: loadingGetCountry,
+      error: errorGetCountry
     }
   ] = useLazyQuery(GET_COUNTRY.QUERY, {
-    onError: (error) => showMessageBox(error.message),
+    // 'network-only' fetch policy is needed so onCompleted is called every time
+    // this is apollojs bug
+    fetchPolicy: 'network-only',
     onCompleted: () => hideMessageBox()
   })
   // Get Country Effect Observer
-  useEffect(async () => {
+  useEffect(() => {
     const { country } = dataGetCountry
       ? dataGetCountry
       : {}
 
     return !loadingGetCountry && country
-      ? setCountries([...countries, country])
+      ? setCountries((countries) => [...countries, country])
       : null
   }, [loadingGetCountry, dataGetCountry])
   // Convert Currency Query
@@ -118,10 +119,13 @@ export default AuthorizedPage(function() {
     convertCurrency,
     {
       data: dataConvertCurrency,
-      loading: loadingConvertCurrency
+      loading: loadingConvertCurrency,
+      error: errorConvertCurrency
     }
   ] = useLazyQuery(CONVERT_CURRENCY.QUERY, {
-    onError: (error) => showMessageBox(error.message),
+    // 'network-only' fetch policy is needed so onCompleted is called every time
+    // this is apollojs bug
+    fetchPolicy: 'network-only',
     onCompleted: () => hideMessageBox()
   })
   // Convert Currency Effect Observer
@@ -169,7 +173,9 @@ export default AuthorizedPage(function() {
     setSuggestions({
       country: {
         items: value.trim().length > 0 && !autofill_items.some((item) => item === value)
-          ? autofill_items.filter(item => item.toLowerCase().startsWith(value.toLowerCase())).map(item => ({name: item}))
+          ? autofill_items
+            .filter(item => item.toLowerCase().startsWith(value.toLowerCase()))
+            .map(item => ({name: item}))
           : {},
         value_key: 'name',
         props_map: {value: 'name'},
@@ -207,14 +213,26 @@ export default AuthorizedPage(function() {
     })
   }
   /**
-   * Loading Effect Observer
+   * Loading Side Effects
    */
   useEffect(() => {
-    console.log('error effect')
     return loadingConvertCurrency || loadingGetCountry
       ? showMessageBox('Loading...')
       : null
-  }, [loadingConvertCurrency, loadingGetCountry])
+  }, [loadingConvertCurrency, loadingGetCountry, showMessageBox])
+  /**
+   * Error Side Effects
+   */
+  useEffect(() => {
+    return errorConvertCurrency
+      ? showMessageBox(errorConvertCurrency.message)
+      : null
+  }, [errorConvertCurrency, showMessageBox])
+  useEffect(() => {
+    return errorGetCountry
+      ? showMessageBox(errorGetCountry.message)
+      : null
+  }, [errorGetCountry, showMessageBox])
   /**
    * Logout Handler
    */

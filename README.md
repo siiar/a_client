@@ -26,9 +26,9 @@ Graphql queries follows the same pattern of the mutations. When some of the quer
 Custom ReactJS hooks goes into this folder. Each hook is supposed to have its own js file, they are named with **PascalCase**.
 
 # Display Loading and Error Messages
-When a mutation or query is executed, we use the **onError** and **onComplete** callbacks to display error messages and hide the message if the query or mutation has been successfully completed.
+When a mutation or query is executed, we use the **onComplete** callbackto hide the message if the query or mutation has been successfully completed.
 
-We also extract all the loading variables from **useQuery**, **useLazyQuery**, and **useMutation** functions and observe them within a single **useEffect**. If any of them are set then we display a loading message.
+We also extract all the loading and error variables from **useQuery**, **useLazyQuery**, and **useMutation** functions and observe all the loadings within a single **useEffect** and observe each error in a separate **useEffects**.
 
 # Components Guide
 ## country-card

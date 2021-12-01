@@ -8,11 +8,8 @@ export default function AuthorizedPage(COMPONENT) {
   const Wrapper = (props) => {
     const {
       data: {
-        user,
         token
-      } = {},
-      loading,
-      error
+      } = {}
     } = useQuery(LOCAL_APP.QUERY)
     return token && token.length > 0
       ? <COMPONENT {...props} />

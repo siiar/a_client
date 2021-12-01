@@ -53,10 +53,10 @@ export default PublicOnlyPage(function Login() {
     login,
     {
       data,
-      loading
+      loading,
+      error
     }
   ] = useMutation(LOGIN.QUERY, { 
-    onError: ({message}) => showMessageBox(message)  ,
     onCompleted: () => hideMessageBox()
   })
   // Login Effect Observer
@@ -78,7 +78,7 @@ export default PublicOnlyPage(function Login() {
         },
       })
       : null
-  }, [data, loading])
+  }, [data, loading, client])
   /**
    * Input Handlerr
    */
@@ -106,13 +106,22 @@ export default PublicOnlyPage(function Login() {
     })
   }
   /**
-   * Loading Effect Observer
+   * Loading Side Effects
    */
   useEffect(() => {
+    console.log('useEffect: [loading]')
     return loading
       ? showMessageBox('Loading...')
       : null
-  }, [loading])
+  }, [loading, showMessageBox])
+  /**
+   * Error Side Effects
+   */
+  useEffect(() => {
+    return error
+      ? showMessageBox(error.message)
+      : null
+  }, [error, showMessageBox])
   /**
    * Render
    */

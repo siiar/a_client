@@ -27,7 +27,7 @@ export default function CountryCard({
   return (
     <div className={style.container}>
       <div className={style.header}>
-        <div className={style.flag}><img src={flag} /></div>
+        <div className={style.flag}><img alt="flag" src={flag} /></div>
         <div className={style.title}>{name}</div>
       </div>
       <div className={style.content}>

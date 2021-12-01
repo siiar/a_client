@@ -10,9 +10,7 @@ export default function PublicOnlyPage(COMPONENT) {
       data: {
         user,
         token
-      } = {},
-      loading,
-      error
+      } = {}
     } = useQuery(LOCAL_APP.QUERY)
     return !token || !user
       ? <COMPONENT {...props} />

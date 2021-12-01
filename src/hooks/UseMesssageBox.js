@@ -1,4 +1,4 @@
-import { useState } from 'react/cjs/react.development'
+import { useState, useCallback } from 'react/cjs/react.development'
 
 export default function useMessageBox() {
   const [
@@ -10,13 +10,13 @@ export default function useMessageBox() {
     setMessage
   ] = useState('')
 
-  const showMessageBox = (text) => {
+  const showMessageBox = useCallback((text) => {
     setShow(true)
     setMessage(text)
-  }
-  const hideMessageBox = () => {
+  }, [])
+  const hideMessageBox = useCallback(() => {
     setShow(false)
-  }
+  }, [])
 
   return {
     showMessageBox,
