@@ -1,29 +1,22 @@
 import React, 
 {
+  useCallback,
   useEffect, 
   useState
 } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   useApolloClient,
-  useLazyQuery,
   useQuery
 } from '@apollo/client'
 // Message Box Hook
 import useMessageBox from '../../hooks/UseMesssageBox'
-// Mock Data
-import { forms } from './mock'
-// Queries
-import {
-  GET_COUNTRY,
-  CONVERT_CURRENCY
-} from '../../queries/home/index'
 import { LOCAL_APP } from '../../queries/app'
 // Components
 import CountryCard from '../../components/country-card/CountryCard'
-import FormCard from '../../components/form-card/FormCard'
-import SuggestionRow from '../../components/suggestion-row/SuggestionRow'
 import MessageBox from '../../components/message-box/MessageBox'
+// Page Sub Components
+import ComponentForms, {DATA_TYPES} from './components/forms/Forms'
 // Private Page HOC
 import AuthorizedPage from '../AuthorizedPage'
 // Style
@@ -38,24 +31,7 @@ export default AuthorizedPage(function() {
     show,
     message
   } = useMessageBox()
-  /**
-   * State Variables
-   */
-  // Input Exchange Amount
-  const [
-    inputAmount,
-    setInputAmount
-  ] = useState(0)
-  // Input Country
-  const [
-    inputCountry,
-    setInputCountry
-  ] = useState('')
-  // Suggestionss For Country Input
-  const [
-    suggestions,
-    setSuggestions
-  ] = useState({})
+  
   // List of Added Countries
   const [
     countries,
@@ -87,152 +63,7 @@ export default AuthorizedPage(function() {
       user : {name}
     } = {}
   } = useQuery(LOCAL_APP.QUERY)
-  /**
-   * Quereis
-   */
-  // Get Country Query
-  const [
-    getCountry,
-    {
-      data: dataGetCountry,
-      loading: loadingGetCountry,
-      error: errorGetCountry
-    }
-  ] = useLazyQuery(GET_COUNTRY.QUERY, {
-    // 'network-only' fetch policy is needed so onCompleted is called every time
-    // this is apollojs bug
-    fetchPolicy: 'network-only',
-    onCompleted: () => hideMessageBox()
-  })
-  // Get Country Effect Observer
-  useEffect(() => {
-    const { country } = dataGetCountry
-      ? dataGetCountry
-      : {}
-
-    return !loadingGetCountry && country
-      ? setCountries((countries) => [...countries, country])
-      : null
-  }, [loadingGetCountry, dataGetCountry])
-  // Convert Currency Query
-  const [
-    convertCurrency,
-    {
-      data: dataConvertCurrency,
-      loading: loadingConvertCurrency,
-      error: errorConvertCurrency
-    }
-  ] = useLazyQuery(CONVERT_CURRENCY.QUERY, {
-    // 'network-only' fetch policy is needed so onCompleted is called every time
-    // this is apollojs bug
-    fetchPolicy: 'network-only',
-    onCompleted: () => hideMessageBox()
-  })
-  // Convert Currency Effect Observer
-  useEffect(() => {
-    const {
-      exchange: { 
-        currencies 
-      } = {}
-    } = dataConvertCurrency
-      ? dataConvertCurrency
-      : {}
-    return !loadingConvertCurrency && currencies
-      ? setExchangeMap(currencies.reduce((acc, { symbol, value }) => ({
-        ...acc, [symbol]: value
-      }), {}))
-      : null
-  }, [loadingConvertCurrency, dataConvertCurrency])
-
-  /**
-   * 
-   * Input Handlers
-   */
-  // Input Handlers Map
-  const onInputChange = ({formName, value}) => {
-    const map = {
-      add_country: onInputCountry,
-      convert_sek: onInputCurrency
-    }
-
-    map[formName](value)
-  }
-  // Currency Input
-  const onInputCurrency = (value) => {
-    setInputAmount(Number(value))
-  }
-  // Country Input
-  const onInputCountry = (value) => {
-    const {
-      add_country: {
-        inputs: {
-          country: {autofill_items}
-        }
-      }
-    } = forms
-    setSuggestions({
-      country: {
-        items: value.trim().length > 0 && !autofill_items.some((item) => item === value)
-          ? autofill_items
-            .filter(item => item.toLowerCase().startsWith(value.toLowerCase()))
-            .map(item => ({name: item}))
-          : {},
-        value_key: 'name',
-        props_map: {value: 'name'},
-        IComponent: SuggestionRow
-      }
-    })
-    setInputCountry(value)
-  }
-  /**
-   * Button Handlers
-   */
-  // Button Map Handler
-  const onFormBtnClick = ({formName, name}) => {
-    const map = {
-      'add_country_submit': onBtnClickAddCountry,
-      'convert_sek_submit': onBtnClickConvertSek
-    }
-    map[`${formName}_${name}`]()
-  }
-  // Add Country Button
-  const onBtnClickAddCountry = () => {
-    getCountry({
-      ...GET_COUNTRY.VARIABLES(inputCountry),
-      context: { debounceKey: '1'}
-    })
-  }
-  // Convert Currency Button
-  const onBtnClickConvertSek = () => {
-    const symbols = countries.map(
-      ({currencies}) => currencies.reduce((acc, {symbol}) => [...acc, symbol], [])
-    ).flat()
-    convertCurrency({
-      ...CONVERT_CURRENCY.VARIABLES('sek', inputAmount, [...(new Set(symbols))]),
-      context: { debounceKey: '1'}
-    })
-  }
-  /**
-   * Loading Side Effects
-   */
-  useEffect(() => {
-    return loadingConvertCurrency || loadingGetCountry
-      ? showMessageBox('Loading...')
-      : null
-  }, [loadingConvertCurrency, loadingGetCountry, showMessageBox])
-  /**
-   * Error Side Effects
-   */
-  useEffect(() => {
-    return errorConvertCurrency
-      ? showMessageBox(errorConvertCurrency.message)
-      : null
-  }, [errorConvertCurrency, showMessageBox])
-  useEffect(() => {
-    return errorGetCountry
-      ? showMessageBox(errorGetCountry.message)
-      : null
-  }, [errorGetCountry, showMessageBox])
+  
   /**
    * Logout Handler
    */
@@ -241,6 +72,29 @@ export default AuthorizedPage(function() {
     localStorage.clear()
     navigate('/login')
   }
+  /**
+   * Sub Component Event Handlers
+   */
+  const onDataReady = useCallback(({type, data}) => {
+    const map = {
+      [DATA_TYPES.GET_COUNTRY]: (country) => {
+        setCountries((countries) => [...countries, country])
+      },
+      [DATA_TYPES.CONVERT_CURRENCY]: (currencies) => {
+        setExchangeMap(currencies.reduce((acc, { symbol, value }) => ({
+          ...acc, [symbol]: value
+        }), {}))
+      }
+    }
+    map[type](data)
+    hideMessageBox()
+  }, [])
+  const onDataLoading = useCallback(() => {
+    showMessageBox('Loading...')
+  }, [])
+  const onDataError = useCallback((message) => {
+    showMessageBox(message)
+  }, [])
   /**
    * Render Component
    */
@@ -297,19 +151,12 @@ export default AuthorizedPage(function() {
           <div className={style.menu}><div onClick={logout}>Logout</div></div>
         </div>
         <div className={style.content}>
-          {
-            Object.keys(forms).map((key, index) => 
-              <FormCard
-                key={`form_${key}_${index}`}
-                title={forms[key].title}
-                inputs={forms[key].inputs}
-                suggestions={suggestions}
-                buttons={forms[key].buttons}
-                onInputChange={({name, value}) => onInputChange({formName: key, name, value})}
-                onBtnClick={({name}) => onFormBtnClick({formName: key, name})}
-              />
-            )
-          }
+          <ComponentForms
+            countries={countries}
+            onDataReady={onDataReady}
+            onDataLoading={onDataLoading}
+            onDataError={onDataError}
+          />
         </div>
       </div>
     </div>
