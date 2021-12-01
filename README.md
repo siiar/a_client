@@ -16,6 +16,8 @@ Apart from containing the initial ReactJs DOM render, it also handles the initia
 Our very first component that is supposed to be loaded by ReactJS, it also contains the routing logic
 ## src/pages
 Each page has its own folder inside **src/pages** and the folder name will use **kebab-case**. Inside the folder all the **jsx** and **css** files will use **PascalCase** and other files will use **camelCase**. **e.g: src/new-home/NewHome.jsx src/new-home/allHomesList.js**
+## src/pages/[page-name]/components
+When a page grows into a big component, it is best to break it down into different sub components, and this is exactly the purpose of this folder. If the sub component is making network requests then it has to have **onDataReady**, **onDataLoading**, **onDataError** props defined, and make use of them. For usage you can check **src/pages/home/components/forms/Forms.jsx**.
 ## src/components
 Each component will be stored under **src/component** and the naming follows the same convention as the pages. The components can include other components inside but not any other dependencies such as database or the global state of the application.
 ## src/mutations
