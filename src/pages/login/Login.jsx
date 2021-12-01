@@ -57,6 +57,7 @@ export default PublicOnlyPage(function Login() {
       error
     }
   ] = useMutation(LOGIN.QUERY, { 
+    onError: () => console.log('no-sweat'),
     onCompleted: () => hideMessageBox()
   })
   // Login Effect Observer
@@ -109,7 +110,6 @@ export default PublicOnlyPage(function Login() {
    * Loading Side Effects
    */
   useEffect(() => {
-    console.log('useEffect: [loading]')
     return loading
       ? showMessageBox('Loading...')
       : null
